@@ -3,9 +3,10 @@ package com.andrewjapar.android_mvvm_architecture.internal.responses
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.andrewjapar.android_mvvm_architecture.domain.entity.UserInfo
+import java.net.URL
 
 @Entity(tableName = "user")
-
 data class LocalUserResponse(
 
     @PrimaryKey(autoGenerate = true)
@@ -24,3 +25,9 @@ data class LocalUserResponse(
     @ColumnInfo(name = "mRoleDescription")
     val mRoleDescription: String
 )
+
+fun List<LocalUserResponse>.mapToUserInfo(): List<UserInfo> {
+    return this.map {
+        UserInfo(it.mName, URL(it.mAvatarUrl), it.mDomainName, it.mRoleDescription)
+    }
+}
