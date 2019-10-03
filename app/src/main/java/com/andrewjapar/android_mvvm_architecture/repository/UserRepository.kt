@@ -22,6 +22,7 @@ class UserRepositoryImpl(
     override fun getUsers(): Single<List<UserInfo>> {
         return userDao.getUsers()
             .map { it.mapToUserInfo() }
+            .onErrorResumeNext { fetchAndInsertDataFromApi() }
             .flatMap { users ->
                 if (users.isEmpty()) fetchAndInsertDataFromApi()
                 else Single.just(users)

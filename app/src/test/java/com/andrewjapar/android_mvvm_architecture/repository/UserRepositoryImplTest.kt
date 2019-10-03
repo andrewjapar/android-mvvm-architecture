@@ -44,6 +44,33 @@ class UserRepositoryImplTest {
         assertEquals(expectedResult, actualResult)
     }
 
+    @Test
+    fun `given fetch data from local return error, when getUsers, then should call remote api and insert to local db`() {
+        val remoteUserResponse = listOf(buildDummyRemoteUser())
+
+        whenever(userDao.getUsers()).thenReturn(Single.error(Throwable()))
+        whenever(userApi.getUsers()).thenReturn(Single.just(remoteUserResponse))
+        whenever(avatarRandomizer.get()).thenReturn(URL("https://vidio.com"))
+
+        val actualResult = userRepository.getUsers().blockingGet()
+        val expectedResult = remoteUserResponse.mapToUserInfo(avatarRandomizer)
+
+        verify(userDao).insertUser(remoteUserResponse.mapToLocalUserResponse(avatarRandomizer))
+        assertEquals(expectedResult, actualResult)
+    }
+
+    @Test
+    fun `given fetch data from remote return error, when getUsers, then should return error`() {
+
+        whenever(userDao.getUsers()).thenReturn(Single.error(Throwable()))
+        whenever(userApi.getUsers()).thenReturn(Single.error(Throwable()))
+        whenever(avatarRandomizer.get()).thenReturn(URL("https://vidio.com"))
+
+        userRepository.getUsers()
+            .test()
+            .assertFailure(Throwable::class.java)
+    }
+
     private fun buildDummyRemoteUser(): RemoteUserResponse {
         return RemoteUserResponse(
             "mantap",
