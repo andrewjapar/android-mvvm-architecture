@@ -8,22 +8,22 @@ import com.andrewjapar.android_mvvm_architecture.internal.dao.UserDao
 import com.andrewjapar.android_mvvm_architecture.internal.responses.LocalUserResponse
 
 @Database(entities = [LocalUserResponse::class], version = 1)
-abstract class UserInfoDatabase : RoomDatabase() {
+abstract class ArchDatabase : RoomDatabase() {
 
-    abstract fun authenticationDao(): UserDao
+    abstract fun userDao(): UserDao
 
     companion object {
 
-        private var INSTANCE: UserInfoDatabase? = null
+        private var INSTANCE: ArchDatabase? = null
 
         private val sLock = Any()
 
-        fun getInstance(context: Context): UserInfoDatabase {
+        fun getInstance(context: Context): ArchDatabase {
             synchronized(sLock) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(
                         context.applicationContext,
-                        UserInfoDatabase::class.java, "userinfo.db"
+                        ArchDatabase::class.java, "archmvvm.db"
                     )
                         .build()
                 }
